@@ -320,6 +320,13 @@ void GeoreferencingTest::testCRS()
 #ifndef ACCEPT_USE_OF_DEPRECATED_PROJ_API_H
 	// Test with IDs
 	{
+		auto t = ProjTransform::crs(id);
+		QVERIFY(t.isValid());
+		QEXPECT_FAIL("ETRS89", "Cannot reliably detect geographic CRS for this ID", Continue);
+		QEXPECT_FAIL("WGS 84", "Cannot reliably detect geographic CRS for this ID", Continue);
+		QEXPECT_FAIL("WGS 84 (G730)", "Cannot reliably detect geographic CRS for this ID", Continue);
+		QCOMPARE(t.isGeographic(), is_geographic);
+		
 		Georeferencing georef;
 		QVERIFY2(georef.setProjectedCRS(id, id), georef.getErrorText().toLatin1());
 		QEXPECT_FAIL("ETRS89", "Cannot reliably detect geographic CRS for this ID", Continue);
@@ -331,6 +338,15 @@ void GeoreferencingTest::testCRS()
 	
 	// Test with specs.
 	{
+		auto t = ProjTransform::crs(spec);
+		QVERIFY(t.isValid());
+#ifndef ACCEPT_USE_OF_DEPRECATED_PROJ_API_H
+		QEXPECT_FAIL("ETRS89", "Cannot reliably detect geographic CRS for this spec", Continue);
+		QEXPECT_FAIL("WGS 84", "Cannot reliably detect geographic CRS for this spec", Continue);
+		QEXPECT_FAIL("WGS 84 (G730)", "Cannot reliably detect geographic CRS for this spec", Continue);
+#endif
+		QCOMPARE(t.isGeographic(), is_geographic);
+		
 		Georeferencing georef;
 		QVERIFY2(georef.setProjectedCRS(id, spec), georef.getErrorText().toLatin1());
 #ifndef ACCEPT_USE_OF_DEPRECATED_PROJ_API_H
